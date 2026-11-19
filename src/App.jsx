@@ -116,7 +116,7 @@ function formatPointTime(timestamp, period) {
 function Chart({ history, historyTimes, positive, period }) {
   const width = 760
   const height = 230
-  const padding = 8
+  const padding = { top: 8, right: 18, bottom: 8, left: 8 }
   const [hoverIndex, setHoverIndex] = useState(null)
   const [tooltipX, setTooltipX] = useState(0)
   const values = history
@@ -136,9 +136,9 @@ function Chart({ history, historyTimes, positive, period }) {
   const range = max - min || 1
   const points = values.map((value, index) => {
     const x = values.length === 1
-      ? padding
-      : padding + (index / (values.length - 1)) * (width - padding * 2)
-    const y = height - padding - ((value - min) / range) * (height - padding * 2)
+      ? padding.left
+      : padding.left + (index / (values.length - 1)) * (width - padding.left - padding.right)
+    const y = height - padding.bottom - ((value - min) / range) * (height - padding.top - padding.bottom)
     return [x, y]
   })
   const area = `M ${points[0][0]} ${height} L ${points.map(([x, y]) => `${x} ${y}`).join(' L ')} L ${points.at(-1)[0]} ${height} Z`
@@ -154,7 +154,11 @@ function Chart({ history, historyTimes, positive, period }) {
         aria-label="Ethereum price history"
         onMouseMove={(event) => {
           const rect = event.currentTarget.getBoundingClientRect()
-          const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
+          const x = (event.clientX - rect.left) / rect.width * width
+          const ratio = Math.max(
+            0,
+            Math.min(1, (x - padding.left) / (width - padding.left - padding.right)),
+          )
           setHoverIndex(Math.round(ratio * (values.length - 1)))
           setTooltipX(Math.max(70, Math.min(rect.width - 70, event.clientX - rect.left)))
         }}
@@ -190,11 +194,22 @@ function Chart({ history, historyTimes, positive, period }) {
         {hoverIndex !== null && (
           <>
             <line x1={points[hoverIndex][0]} y1="0" x2={points[hoverIndex][0]} y2={height} className="chart-crosshair" />
-            <circle cx={points[hoverIndex][0]} cy={points[hoverIndex][1]} r="5" fill={positive ? '#35d3bd' : '#fb7185'} stroke="#101827" strokeWidth="3" />
           </>
         )}
-        <circle cx={last[0]} cy={last[1]} r="5" fill={positive ? '#35d3bd' : '#fb7185'} stroke="#101827" strokeWidth="3" />
       </svg>
+      <span
+        className={`chart-point-marker ${values.length < 2 || values.at(-1) >= values.at(-2) ? 'rising' : 'falling'}`}
+        style={{ left: `${(last[0] / width) * 100}%`, top: `${(last[1] / height) * 100}%` }}
+      />
+      {hoverIndex !== null && (
+        <span
+          className={`chart-point-marker hover ${values[hoverIndex] >= values[Math.max(0, hoverIndex - 1)] ? 'rising' : 'falling'}`}
+          style={{
+            left: `${(points[hoverIndex][0] / width) * 100}%`,
+            top: `${(points[hoverIndex][1] / height) * 100}%`,
+          }}
+        />
+      )}
       {hoverIndex !== null && (
         <div className="chart-tooltip" style={{ left: tooltipX }}>
           <span>{formatPointTime(historyTimes[hoverIndex], period)}</span>

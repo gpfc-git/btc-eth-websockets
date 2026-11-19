@@ -221,6 +221,24 @@
   height: 100%;
 }
 
+.chart-point-marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border: 3px solid #101827;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.chart-point-marker.rising { background: var(--green); }
+.chart-point-marker.falling { background: var(--red); }
+.chart-point-marker.hover {
+  width: 11px;
+  height: 11px;
+  z-index: 2;
+}
+
 .chart-tooltip {
   position: absolute;
   top: 12px;
