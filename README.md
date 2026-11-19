@@ -1,16 +1,38 @@
-# React + Vite
+# Crypto WebSocket Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React dashboard for tracking Bitcoin and Ethereum prices in USD. It uses a local delta WebSocket relay backed by Binance market data.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run delta-server
+```
 
-## React Compiler
+In another terminal:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run dev
+```
 
-## Expanding the Oxlint configuration
+Open the Vite URL shown in the terminal.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Features
+
+- Switch between BTC and ETH.
+- Live delta updates with reconnect handling.
+- NOW view with a rolling 300-point, one-second history.
+- Time ranges from 1 hour to 1 year.
+- Gain/loss calculated for the selected range.
+- Hover chart points for their timestamp and USD value.
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the React development server |
+| `npm run delta-server` | Start the Binance-backed WebSocket relay |
+| `npm run build` | Create a production build |
+| `npm run lint` | Run Oxlint |
+
+The relay listens on `ws://127.0.0.1:8001` and connects to Binance public WebSocket streams. No API key is required.
